@@ -15,7 +15,7 @@ metadata:
   namespace: flux-system
 spec:
   type: github
-  address: https://github.com/fabricesemti80/home-stack
+  address: https://github.com/fabricesemti80/home-cluster
   secretRef:
     name: github-token
 
