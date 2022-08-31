@@ -59,9 +59,9 @@ For provisioning the following tools will be used:
 
 1. Install the **most recent versions** of the following CLI tools on your workstation, if you are using [Homebrew](https://brew.sh/) on MacOS or Linux skip to steps 3 and 4.
 
-    * Required: [age](https://github.com/FiloSottile/age), [ansible](https://www.ansible.com), [flux](https://toolkit.fluxcd.io/), [go-task](https://github.com/go-task/task), [ipcalc](http://jodies.de/ipcalc), [jq](https://stedolan.github.io/jq/), [kubectl](https://kubernetes.io/docs/tasks/tools/), [pre-commit](https://github.com/pre-commit/pre-commit), [sops](https://github.com/mozilla/sops), [terraform](https://www.terraform.io), [yq v4](https://github.com/mikefarah/yq)
+    - Required: [age](https://github.com/FiloSottile/age), [ansible](https://www.ansible.com), [flux](https://toolkit.fluxcd.io/), [go-task](https://github.com/go-task/task), [ipcalc](http://jodies.de/ipcalc), [jq](https://stedolan.github.io/jq/), [kubectl](https://kubernetes.io/docs/tasks/tools/), [pre-commit](https://github.com/pre-commit/pre-commit), [sops](https://github.com/mozilla/sops), [terraform](https://www.terraform.io), [yq v4](https://github.com/mikefarah/yq)
 
-    * Recommended: [direnv](https://github.com/direnv/direnv), [helm](https://helm.sh/), [kustomize](https://github.com/kubernetes-sigs/kustomize), [prettier](https://github.com/prettier/prettier), [stern](https://github.com/stern/stern), [yamllint](https://github.com/adrienverge/yamllint)
+    - Recommended: [direnv](https://github.com/direnv/direnv), [helm](https://helm.sh/), [kustomize](https://github.com/kubernetes-sigs/kustomize), [prettier](https://github.com/prettier/prettier), [stern](https://github.com/stern/stern), [yamllint](https://github.com/adrienverge/yamllint)
 
 2. This guide heavily relies on [go-task](https://github.com/go-task/task) as a framework for setting things up. It is advised to learn and understand the commands it is running under the hood.
 
@@ -458,18 +458,21 @@ By default this template only works on a public GitHub repository, it is advised
 
 The benefits of a public repository include:
 
-* Debugging or asking for help, you can provide a link to a resource you are having issues with.
-* Adding a topic to your repository of `k8s-at-home` to be included in the [k8s-at-home-search](https://whazor.github.io/k8s-at-home-search/). This search helps people discover different configurations of Helm charts across others Flux based repositories.
+- Debugging or asking for help, you can provide a link to a resource you are having issues with.
+- Adding a topic to your repository of `k8s-at-home` to be included in the [k8s-at-home-search](https://whazor.github.io/k8s-at-home-search/). This search helps people discover different configurations of Helm charts across others Flux based repositories.
 
 <details>
   <summary>Expand to read guide on adding Flux SSH authentication</summary>
 
   1. Generate new SSH key:
+
       ```sh
       ssh-keygen -t ecdsa -b 521 -C "github-deploy-key" -f ./cluster/github-deploy-key -q -P ""
       ```
+
   2. Paste public key in the deploy keys section of your repository settings
   3. Create sops secret in `cluster/flux/flux-system/github-deploy-key.sops.yaml` with the contents of:
+
       ```yaml
       # yamllint disable
       apiVersion: v1
@@ -489,15 +492,21 @@ The benefits of a public repository include:
               github.com ecdsa-sha2-nistp256 ...
               github.com ssh-rsa ...
       ```
+
   4. Encrypt secret:
+
       ```sh
       sops --encrypt --in-place ./cluster/flux/flux-system/github-deploy-key.sops.yaml
       ```
+
   5. Apply secret to cluster:
+
       ```sh
       sops --decrypt cluster/flux/flux-system/github-deploy-key.sops.yaml | kubectl apply -f -
       ```
-  6.  Update `cluster/flux/flux-system/flux-cluster.yaml`:
+
+  6. Update `cluster/flux/flux-system/flux-cluster.yaml`:
+
       ```yaml
       ---
       apiVersion: source.toolkit.fluxcd.io/v1beta2
@@ -514,16 +523,22 @@ The benefits of a public repository include:
         secretRef:
           name: github-deploy-key
       ```
+
   7. Commit and push changes
   8. Force flux to reconcile your changes
+
      ```sh
      task cluster:reconcile
      ```
+
   9. Verify git repository is now using SSH:
+
       ```sh
       task cluster:gitrepositories
       ```
+
   10. Optionally set your repository to Private in your repository settings.
+
 </details>
 
 ## 👉 Troubleshooting
